@@ -24,7 +24,7 @@ To bypass these hardware and computational limits, this framework uses a continu
 *   **Author:** Soura Tanay Roy (Undergraduate Physics, Presidency University, Kolkata)
 *   **Mentor:** Dwaipayan Mukherjee
 *   **Exhibition:** Presision 2026 Science Exhibition
-*   **Poster:** [View the Presision 2026 Exhibition Poster Here](Presision-2026-Oscilloscope-Poster.pdf)
+*   **Poster:** [View the Presision 2026 Exhibition Poster Here](Presision 2026 Oscilloscope Poster.pdf)
 
 ## Usage
 To run this project locally, ensure you have Python 3 installed. 
