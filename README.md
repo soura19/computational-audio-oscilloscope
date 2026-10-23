@@ -1,38 +1,34 @@
-# Computational Audio Oscilloscope for Real-Time Signal Analysis
+# Python Audio Oscilloscope
 
-Traditional digital storage oscilloscopes are essential for experimental physics but are often expensive and inaccessible outside formal laboratories. This project provides a low-cost, software-based alternative by utilizing standard consumer audio hardware to approximate the analytical capabilities of a dual-channel oscilloscope.
+A Python script that uses standard consumer audio inputs (two microphones connected to the pc, wired/wireless) to act as a dual-channel oscilloscope. It processes audio in real-time to generate and visualize stable Lissajous figures.
 
-This project was originally presented at the Presision 2026 Science Exhibition (Team E) at Presidency University, Kolkata.
+## The Problem
+Plotting Lissajous figures from raw consumer audio usually fails. Background noise and hardware clock drift distort the signal. Worse, running a standard FFT on short audio buffers (e.g., 2048 samples at 44.1kHz) restricts frequency resolution to about ~21.5 Hz per bin. That means a pure 400 Hz tone gets quantized, destroying the visual stability of the projection.
 
-## The Computational Challenge
-When using consumer hardware (like standard audio inputs or laptop microphones), ambient noise and hardware clock drift heavily distort the signal. Furthermore, applying standard Fast Fourier Transforms (FFT) on short time-domain buffers creates a severe quantization limit. For example, sampling at 44,100 Hz with a 2048-sample buffer strictly binds the frequency resolution to roughly 21.5 Hz per bin. A physically pure 400 Hz acoustic tone gets erroneously quantized, destroying the visual stability of the resulting Lissajous figures.
+## How It Works
+Instead of plotting the noisy raw data, this script actively processes and reconstructs the signal in real-time:
+1. **Windowing & FFT:** Applies continuous Hann windowing to the incoming audio to stop spectral leakage.
+2. **Sub-Bin Interpolation:** Uses parabolic peak interpolation to calculate the exact frequency between standard FFT bins.
+3. **Signal Reconstruction:** Generates clean, zero-phase sine waves using those exact detected frequencies.
+4. **Real-Time Plotting:** Maps the reconstructed signals to X and Y axes to display clean Lissajous figures alongside the raw, noisy hardware input.
 
-## The Solution
-To bypass these hardware and computational limits, this framework uses a continuous, asynchronous digital signal processing pipeline:
-*   **Hann Windowing:** Applied continuously to the incoming time-domain signal to smooth discrete buffer boundaries and suppress spectral leakage prior to FFT execution.
-*   **Parabolic Peak Interpolation:** Instead of accepting discrete bins, the algorithm evaluates the peak magnitude and its neighbors. By calculating the fractional offset of the underlying parabola, it extracts the true acoustic frequency with sub-bin precision.
-*   **Zero-Phase Reconstruction:** Once the exact frequency is extracted, the software dynamically renders a mathematically pure, zero-phase harmonic waveform. 
-*   **Orthogonal Projection:** The reconstructed signals are mapped to perpendicular axes, translating microscopic temporal frequency errors into macroscopic geometric rotation.
+## Tech Stack
+* **Python 3**
+* **`sounddevice`:** Asynchronous audio capture
+* **`numpy`:** Signal processing and interpolation math
+* **`pyqtgraph`:** Hardware-accelerated GUI plotting
 
-## Technical Stack
-*   **Language:** Python
-*   **Audio Capture:** `sounddevice` (asynchronous capture via consumer ADCs)
-*   **Mathematics:** `numpy`
-*   **Visualization:** `pyqtgraph` (chosen for low-latency, hardware-accelerated UI rendering)
+## Run It Locally
+1. Clone this repository.
+2. Install the required dependencies: 
+   `pip install sounddevice numpy pyqtgraph PyQt6`
+3. Run the script: 
+   `python oscilloscope.py`
+*(Note: Ensure you have two active independent audio input connected to your system).*
+4. Now install an audio frequency generator app from PlayStore/AppStore on two smartphones, and point their speaker to each audio channel.
+5. Generate random frequency ratio (e.g. one phone can generate a frequency of 200Hz while other can generate 400Hz), and watch it getting detected by the program in the title bar while also drawing the appropriate lissajous figures.
 
-## Project Context
-*   **Author:** Soura Tanay Roy (Undergraduate Physics, Presidency University, Kolkata)
-*   **Mentor:** Dwaipayan Mukherjee
-*   **Exhibition:** Presision 2026 Science Exhibition
-*   **Poster:** [View the Presision 2026 Exhibition Poster Here](Presision%202026%20Oscilloscope%20Poster.pdf)
-
-## Usage
-To run this project locally, ensure you have Python 3 installed. 
-
-1. Clone the repository.
-2. Install the required dependencies: `pip install sounddevice numpy pyqtgraph PyQt6`
-3. Run the application: `python oscilloscope.py`
-4. The GUI will launch, actively analyzing your default system audio inputs to form the real-time Lissajous projections.
-
-## License
-This project is open-source and available under the MIT License.
+---
+*Built for the Presision 2026 Science Exhibition at Presidency University, Kolkata.*
+*Mentor: Dwaipayan Mukherjee*
+*[View the original exhibition poster here](Presision%202026%20Oscilloscope%20Poster.pdf)*
